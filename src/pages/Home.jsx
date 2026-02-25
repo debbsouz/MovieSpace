@@ -1,7 +1,7 @@
 // src/pages/Home.jsx
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { useFavorites } from '../contexts/FavoritesContext'; // ajuste o caminho se necessário
+import { useFavorites } from '../contexts/FavoritesContext';
 import { getPopularMovies, getImageUrl } from '../services/tmdbApi';
 
 export default function Home() {
@@ -15,7 +15,7 @@ export default function Home() {
     const fetchPopular = async () => {
       try {
         const data = await getPopularMovies();
-        setMovies(data.results.slice(0, 20));
+        setMovies(data.results || []); // garante array vazio se não vier results
       } catch (err) {
         setError('Erro ao carregar filmes. Verifique sua conexão ou API Key.');
         console.error(err);
@@ -87,14 +87,14 @@ export default function Home() {
               return (
                 <Link
                   key={movie.id}
-                  to={`/movie/${movie.id}`}
+                  to={`/movie/${movie.id}`}  // ← corrigido: sempre usa movie.id real
                   className="relative flex-shrink-0 w-44 sm:w-52 md:w-60 lg:w-64 snap-start 
                              bg-dark-secondary rounded-xl overflow-hidden shadow-xl 
                              hover:scale-105 hover:shadow-2xl transition-all duration-300"
                 >
                   <img
                     src={getImageUrl(movie.poster_path)}
-                    alt={movie.title}
+                    alt={movie.title || 'Sem título'}
                     className="w-full h-64 md:h-80 lg:h-96 object-cover"
                     loading="lazy"
                   />
@@ -138,11 +138,11 @@ export default function Home() {
 
                   <div className="p-4">
                     <h3 className="font-semibold text-base md:text-lg truncate">
-                      {movie.title}
+                      {movie.title || 'Sem título'}
                     </h3>
                     <p className="text-sm text-text-secondary mt-1 flex items-center">
                       <span className="text-yellow-400 mr-1">★</span>
-                      {movie.vote_average.toFixed(1)} • {new Date(movie.release_date).getFullYear() || 'N/A'}
+                      {movie.vote_average?.toFixed(1) || '—'} • {new Date(movie.release_date).getFullYear() || 'N/A'}
                     </p>
                   </div>
                 </Link>
