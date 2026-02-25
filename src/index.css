@@ -5,22 +5,30 @@
 html, body {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
   background-color: #141414;
   color: #E5E5E5;
   font-family: 'Inter', sans-serif;
 }
 
+* {
+  box-sizing: border-box;
+}
+
+/* Scrollbar dark */
 ::-webkit-scrollbar {
   width: 8px;
-  background-color: #141414;
 }
-
+::-webkit-scrollbar-track {
+  background: #141414;
+}
 ::-webkit-scrollbar-thumb {
-  background-color: #333;
+  background: #333;
   border-radius: 4px;
 }
-
 ::-webkit-scrollbar-thumb:hover {
-  background-color: #555;
+  background: #555;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
