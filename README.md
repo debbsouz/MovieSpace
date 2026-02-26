@@ -1,7 +1,6 @@
 # MovieSpace
 
 Aplicação web para descoberta de filmes e séries inspirada na experiência de plataformas modernas de streaming.
-
 O projeto foi desenvolvido com foco em consumo de APIs reais, organização de arquitetura front-end e construção de uma interface visual consistente.
 
 ---
@@ -27,14 +26,22 @@ React • React Router DOM • Context API • TailwindCSS • TMDB API • Vite
 
 ## Screenshots
 
-<p align="center">
+<div align="center">
   <img src="./screenshots/home.png" width="420"/>
   <img src="./screenshots/browse.png" width="420"/>
-</p>
+</div>
 
-<p align="center">
+<div align="center">
   <img src="./screenshots/search.png" width="420"/>
   <img src="./screenshots/trending.png" width="420"/>
-</p>
+</div>
+
+</br>
+
+<div align="center">
+ <img src="./screenshots/demo.gif.gif" width="900"/>
+ </div>
 
 ---
+
+⭐ Projeto desenvolvido para portfólio com objetivo de simular um produto real focado em experiência de navegação, consumo de dados e padrões modernos de interface.
