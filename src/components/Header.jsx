@@ -69,13 +69,12 @@ export default function Header() {
             Home
           </Link>
 
-          {/* ✅ como você não tem rota /filmes e /series ainda, apontamos pra busca */}
-          <Link to="/search?q=movie" className="text-text-secondary hover:text-white transition">
-            Filmes
-          </Link>
-          <Link to="/search?q=tv" className="text-text-secondary hover:text-white transition">
-            Séries
-          </Link>
+<Link to="/browse?type=movie" className="text-text-secondary hover:text-white transition">
+  Filmes
+</Link>
+<Link to="/browse?type=tv" className="text-text-secondary hover:text-white transition">
+  Séries
+</Link>
 
           <Link to="/minha-lista" className="text-text-secondary hover:text-white transition">
             Minha Lista

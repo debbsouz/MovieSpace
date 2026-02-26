@@ -48,4 +48,22 @@ export const getMediaCredits = (type, id) =>
   fetchFromTMDB(`/${type}/${id}/credits`);
 
 export const getImageUrl = (path, size = 'w500') =>
-  path ? `https://image.tmdb.org/t/p/${size}${path}` : '/placeholder-poster.jpg';
+  path ? `https://image.tmdb.org/t/p/${size}${path}` : '/placeholder-poster.jpg'; 
+
+// Listas genéricas (Movie/TV)
+export const getPopular = (type = 'movie', page = 1) =>
+  fetchFromTMDB(`/${type}/popular`, { page });
+
+export const getTopRated = (type = 'movie', page = 1) =>
+  fetchFromTMDB(`/${type}/top_rated`, { page });
+
+// Filmes
+export const getNowPlayingMovies = (page = 1) =>
+  fetchFromTMDB('/movie/now_playing', { page });
+
+export const getUpcomingMovies = (page = 1) =>
+  fetchFromTMDB('/movie/upcoming', { page });
+
+// Séries
+export const getOnTheAirTV = (page = 1) =>
+  fetchFromTMDB('/tv/on_the_air', { page });

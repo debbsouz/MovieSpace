@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import MovieDetails from './pages/MovieDetails';
 import MyList from './pages/MyList';
 import Search from './pages/Search';
+import Browse from './pages/Browse';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
             <Route path="/movie/:id" element={<MovieDetails />} />
             <Route path="/tv/:id" element={<MovieDetails />} />
             <Route path="/minha-lista" element={<MyList />} />
+            <Route path="/browse" element={<Browse />} />
           </Routes>
         </main>
       </div>
