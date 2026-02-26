@@ -1,16 +1,40 @@
-# React + Vite
+# MovieSpace
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicação web para descoberta de filmes e séries inspirada na experiência de plataformas modernas de streaming.
 
-Currently, two official plugins are available:
+O projeto foi desenvolvido com foco em consumo de APIs reais, organização de arquitetura front-end e construção de uma interface visual consistente.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Busca global com sugestões em tempo real
+- Página de detalhes com sinopse e avaliação
+- Lista pessoal persistida no navegador
+- Página Trending com filtros por tipo e período
+- Exploração por categorias com carrosséis horizontais
+- Infinite scroll na busca
+- Top 10 por gênero
+- Sistema de favoritos integrado
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Stack
+
+React • React Router DOM • Context API • TailwindCSS • TMDB API • Vite
+
+---
+
+## Screenshots
+
+<p align="center">
+  <img src="./screenshots/home.png" width="420"/>
+  <img src="./screenshots/browse.png" width="420"/>
+</p>
+
+<p align="center">
+  <img src="./screenshots/search.png" width="420"/>
+  <img src="./screenshots/trending.png" width="420"/>
+</p>
+
+---
