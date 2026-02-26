@@ -6,6 +6,7 @@ import MyList from './pages/MyList';
 import Search from './pages/Search';
 import Browse from './pages/Browse';
 import TopRated from './pages/TopRated';
+import Trending from './pages/Trending';
 
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
             <Route path="/minha-lista" element={<MyList />} />
             <Route path="/browse" element={<Browse />} />
             <Route path="/top-rated" element={<TopRated />} />
+            <Route path="/trending" element={<Trending />} />
           </Routes>
         </main>
       </div>

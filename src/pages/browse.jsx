@@ -12,24 +12,31 @@ import {
 
 export default function Browse() {
   const [params, setParams] = useSearchParams();
+
+  // pego o tipo pela URL (?type=movie|tv)
+  // qualquer coisa diferente de tv eu considero movie, pra não quebrar
   const type = params.get('type') === 'tv' ? 'tv' : 'movie';
 
+  // listas que aparecem em carrossel (cada uma vira um <MediaRow />)
   const [popular, setPopular] = useState([]);
   const [topRated, setTopRated] = useState([]);
   const [nowPlaying, setNowPlaying] = useState([]);
   const [upcoming, setUpcoming] = useState([]);
   const [onTheAir, setOnTheAir] = useState([]);
 
+  // estados básicos de request
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    // carrega as categorias de acordo com o tipo (movie ou tv)
     const run = async () => {
       try {
         setLoading(true);
         setError(null);
 
         if (type === 'movie') {
+          // Promise.all aqui deixa bem mais rápido do que buscar um por um
           const [p, t, n, u] = await Promise.all([
             getPopular('movie'),
             getTopRated('movie'),
@@ -41,6 +48,8 @@ export default function Browse() {
           setTopRated(t.results || []);
           setNowPlaying(n.results || []);
           setUpcoming(u.results || []);
+
+          // quando estou em movie, eu limpo o que é exclusivo de tv
           setOnTheAir([]);
         } else {
           const [p, t, o] = await Promise.all([
@@ -52,6 +61,8 @@ export default function Browse() {
           setPopular(p.results || []);
           setTopRated(t.results || []);
           setOnTheAir(o.results || []);
+
+          // quando estou em tv, eu limpo o que é exclusivo de movie
           setNowPlaying([]);
           setUpcoming([]);
         }
@@ -78,21 +89,28 @@ export default function Browse() {
           </p>
         </div>
 
+        {/* toggle simples pra alternar entre Filmes e Séries
+            (isso só muda o query param, e o useEffect faz o resto) */}
         <div className="flex bg-dark-secondary rounded-full p-1 border border-dark-tertiary">
           <button
             type="button"
             onClick={() => setParams({ type: 'movie' })}
             className={`px-4 py-2 rounded-full transition ${
-              type === 'movie' ? 'bg-accent-red text-white' : 'text-text-secondary hover:text-white'
+              type === 'movie'
+                ? 'bg-accent-red text-white'
+                : 'text-text-secondary hover:text-white'
             }`}
           >
             Filmes
           </button>
+
           <button
             type="button"
             onClick={() => setParams({ type: 'tv' })}
             className={`px-4 py-2 rounded-full transition ${
-              type === 'tv' ? 'bg-accent-red text-white' : 'text-text-secondary hover:text-white'
+              type === 'tv'
+                ? 'bg-accent-red text-white'
+                : 'text-text-secondary hover:text-white'
             }`}
           >
             Séries
@@ -100,6 +118,7 @@ export default function Browse() {
         </div>
       </div>
 
+      {/* loading: skeleton pra não ficar “tela vazia” */}
       {loading && (
         <>
           <SkeletonRow title="Carregando..." />
@@ -107,10 +126,10 @@ export default function Browse() {
         </>
       )}
 
-      {!loading && error && (
-        <p className="text-red-500 text-lg">{error}</p>
-      )}
+      {/* erro */}
+      {!loading && error && <p className="text-red-500 text-lg">{error}</p>}
 
+      {/* conteúdo */}
       {!loading && !error && (
         <>
           <MediaRow title="Populares" items={popular} type={type} />

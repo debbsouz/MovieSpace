@@ -1,10 +1,14 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
+// Context da "Minha Lista" (favoritos). Aqui fica toda a lógica de salvar/remover
+// e persistir no localStorage sem eu precisar repetir isso em todo componente.
 const FavoritesContext = createContext(null);
 
+// chave padrão no localStorage (pra ficar fácil de achar e limpar se precisar)
 const STORAGE_KEY = 'favorites';
 
 export function FavoritesProvider({ children }) {
+  // Inicializo já lendo do localStorage (assim a lista não some ao dar refresh)
   const [favorites, setFavorites] = useState(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
@@ -15,6 +19,7 @@ export function FavoritesProvider({ children }) {
     }
   });
 
+  // Sempre que favorites mudar, eu salvo de volta no localStorage
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(favorites));
@@ -23,23 +28,32 @@ export function FavoritesProvider({ children }) {
     }
   }, [favorites]);
 
-  // ✅ Aqui está a correção principal: comparar pelo id (e blindar string/number)
+  // Verifica se já está favoritado.
+  // Eu comparo como string pra evitar bug chato (às vezes vem number, às vezes string).
   const isFavorite = (id) => favorites.some((fav) => String(fav.id) === String(id));
 
+  // Adiciona no topo da lista (pra ficar tipo "adicionei agora", já aparece primeiro)
+  // E também evita duplicar o mesmo item.
   const addFavorite = (item) => {
     if (!item?.id) return;
+
     setFavorites((prev) => {
-      if (prev.some((fav) => String(fav.id) === String(item.id))) return prev;
+      const exists = prev.some((fav) => String(fav.id) === String(item.id));
+      if (exists) return prev;
       return [item, ...prev];
     });
   };
 
+  // Remove pelo id
   const removeFavorite = (id) => {
     setFavorites((prev) => prev.filter((fav) => String(fav.id) !== String(id)));
   };
 
+  // Limpa geral (útil pra botão "Limpar lista")
   const clearFavorites = () => setFavorites([]);
 
+  // useMemo aqui é só pra não recriar o objeto do context toda hora sem necessidade,
+  // aí evita re-render chato em componentes que consomem o contexto.
   const value = useMemo(
     () => ({
       favorites,
@@ -56,6 +70,9 @@ export function FavoritesProvider({ children }) {
 
 export function useFavorites() {
   const ctx = useContext(FavoritesContext);
+
+  // Se eu esquecer de envolver o app com FavoritesProvider, já dá erro claro
   if (!ctx) throw new Error('useFavorites must be used within a FavoritesProvider');
+
   return ctx;
 }
