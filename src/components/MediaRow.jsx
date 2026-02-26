@@ -1,9 +1,11 @@
 import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { getImageUrl } from '../services/tmdbApi';
+import { useFavorites } from '../contexts/FavoritesContext';
 
 export default function MediaRow({ title, items = [], type = 'movie' }) {
   const carouselRef = useRef(null);
+  const { isFavorite, addFavorite, removeFavorite } = useFavorites();
 
   const scrollLeft = () => {
     carouselRef.current?.scrollBy({ left: -320, behavior: 'smooth' });
@@ -24,7 +26,6 @@ export default function MediaRow({ title, items = [], type = 'movie' }) {
           <button
             onClick={scrollLeft}
             className="bg-dark-secondary hover:bg-dark-tertiary text-white px-3 py-2 rounded-full transition shadow-md"
-            aria-label="Scroll esquerda"
             type="button"
           >
             ←
@@ -32,7 +33,6 @@ export default function MediaRow({ title, items = [], type = 'movie' }) {
           <button
             onClick={scrollRight}
             className="bg-dark-secondary hover:bg-dark-tertiary text-white px-3 py-2 rounded-full transition shadow-md"
-            aria-label="Scroll direita"
             type="button"
           >
             →
@@ -49,6 +49,7 @@ export default function MediaRow({ title, items = [], type = 'movie' }) {
           const name = item.title || item.name || 'Sem título';
           const rating = item.vote_average?.toFixed(1) || '—';
           const year = (item.release_date || item.first_air_date || '').slice(0, 4) || 'N/A';
+          const fav = isFavorite(id);
 
           return (
             <Link
@@ -63,7 +64,6 @@ export default function MediaRow({ title, items = [], type = 'movie' }) {
                 loading="lazy"
               />
 
-              {/* Overlay hover */}
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent" />
 
@@ -83,9 +83,32 @@ export default function MediaRow({ title, items = [], type = 'movie' }) {
                     <div className="bg-white text-black font-semibold px-3 py-2 rounded-lg text-sm hover:bg-gray-200 transition">
                       Ver detalhes
                     </div>
-                    <div className="bg-dark-secondary/80 text-white px-3 py-2 rounded-lg text-sm border border-white/10 hover:bg-dark-tertiary transition">
-                      + Lista
-                    </div>
+
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+
+                        if (fav) {
+                          removeFavorite(id);
+                        } else {
+                          addFavorite({
+                            id,
+                            title: item.title,
+                            name: item.name,
+                            poster_path: item.poster_path,
+                            media_type: type,
+                            vote_average: item.vote_average,
+                            release_date: item.release_date,
+                            first_air_date: item.first_air_date,
+                          });
+                        }
+                      }}
+                      className="bg-dark-secondary/80 text-white px-3 py-2 rounded-lg text-sm border border-white/10 hover:bg-dark-tertiary transition"
+                    >
+                      {fav ? 'Remover' : '+ Lista'}
+                    </button>
                   </div>
                 </div>
               </div>

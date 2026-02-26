@@ -96,28 +96,54 @@ export default function Home() {
                       className="w-full h-64 md:h-80 lg:h-96 object-cover"
                     />
 
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
+ <button
+  onClick={(e) => {
+    e.preventDefault();
+    e.stopPropagation();
 
-                        if (isFav) {
-                          removeFavorite(movie.id);
-                        } else {
-                          addFavorite({
-                            id: movie.id,
-                            title: movie.title,
-                            poster_path: movie.poster_path,
-                            media_type: 'movie',
-                            vote_average: movie.vote_average,
-                            release_date: movie.release_date,
-                          });
-                        }
-                      }}
-                      className="absolute top-3 right-3 bg-black/60 hover:bg-black/80 rounded-full p-2 transition z-10"
-                    >
-                      ❤️
-                    </button>
+    if (isFav) {
+      removeFavorite(movie.id);
+    } else {
+      addFavorite({
+        id: movie.id,
+        title: movie.title,
+        poster_path: movie.poster_path,
+        media_type: 'movie',
+        vote_average: movie.vote_average,
+        release_date: movie.release_date,
+      });
+    }
+  }}
+  className="absolute top-3 right-3 bg-black/60 hover:bg-black/80 rounded-full p-2 transition z-10"
+  aria-label={isFav ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+  type="button"
+>
+  {isFav ? (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      className="h-7 w-7"
+      fill="currentColor"
+    >
+      <path d="M12 21s-6.716-4.35-9.33-7.5C.7 11.18.9 7.9 3.05 6.05c1.9-1.64 4.6-1.36 6.2.28L12 9.08l2.75-2.75c1.6-1.64 4.3-1.92 6.2-.28 2.15 1.85 2.35 5.13.38 7.45C18.716 16.65 12 21 12 21z" />
+    </svg>
+  ) : (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      className="h-7 w-7"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+      />
+    </svg>
+  )}
+</button>
 
                     <div className="p-4">
                       <h3 className="font-semibold text-base md:text-lg truncate">

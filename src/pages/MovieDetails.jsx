@@ -1,19 +1,20 @@
-// src/pages/MovieDetails.jsx
 import { useState, useEffect } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import { getMediaDetails, getMediaVideos, getImageUrl } from '../services/tmdbApi';
+import { useFavorites } from '../contexts/FavoritesContext';
 
 export default function MovieDetails() {
   const { id } = useParams();
   const location = useLocation();
 
-  // Inferimos o tipo pela rota atual: /tv/:id ou /movie/:id
   const type = location.pathname.startsWith('/tv') ? 'tv' : 'movie';
 
   const [media, setMedia] = useState(null);
   const [trailerKey, setTrailerKey] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const { isFavorite, addFavorite, removeFavorite } = useFavorites();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -84,9 +85,27 @@ export default function MovieDetails() {
   const backdrop = getImageUrl(media.backdrop_path, 'original');
   const poster = getImageUrl(media.poster_path, 'w500');
 
+  const fav = isFavorite(media.id);
+
+  const handleToggleFavorite = () => {
+    if (fav) {
+      removeFavorite(media.id);
+    } else {
+      addFavorite({
+        id: media.id,
+        title: media.title,
+        name: media.name,
+        poster_path: media.poster_path,
+        media_type: type,
+        vote_average: media.vote_average,
+        release_date: media.release_date,
+        first_air_date: media.first_air_date,
+      });
+    }
+  };
+
   return (
     <div className="relative min-h-screen">
-      {/* Backdrop */}
       <div
         className="absolute inset-0 bg-cover bg-center opacity-30"
         style={{ backgroundImage: `url(${backdrop})` }}
@@ -94,10 +113,11 @@ export default function MovieDetails() {
       <div className="absolute inset-0 bg-gradient-to-t from-dark-bg via-dark-bg/90 to-transparent" />
 
       <div className="relative pt-32 pb-20 container mx-auto px-4 z-10">
-        {/* Trailer no topo */}
         {trailerKey ? (
           <div className="mb-12">
-            <h2 className="text-3xl font-bold mb-4 text-center md:text-left">Trailer Oficial</h2>
+            <h2 className="text-3xl font-bold mb-4 text-center md:text-left">
+              Trailer Oficial
+            </h2>
             <div className="aspect-video w-full max-w-5xl mx-auto rounded-xl overflow-hidden shadow-2xl">
               <iframe
                 src={`https://www.youtube.com/embed/${trailerKey}?autoplay=1&mute=1&controls=1&rel=0`}
@@ -114,7 +134,6 @@ export default function MovieDetails() {
           </p>
         )}
 
-        {/* Conteúdo */}
         <div className="flex flex-col md:flex-row gap-10">
           <img
             src={poster}
@@ -141,8 +160,12 @@ export default function MovieDetails() {
               {media.overview || 'Sinopse não disponível.'}
             </p>
 
-            <button className="bg-accent-red hover:bg-accent-red-hover text-white font-semibold py-3 px-8 rounded-lg transition duration-300 transform hover:scale-105">
-              + Adicionar à Minha Lista
+            <button
+              onClick={handleToggleFavorite}
+              type="button"
+              className="bg-accent-red hover:bg-accent-red-hover text-white font-semibold py-3 px-8 rounded-lg transition duration-300 transform hover:scale-105"
+            >
+              {fav ? 'Remover da Minha Lista' : '+ Adicionar à Minha Lista'}
             </button>
           </div>
         </div>
