@@ -10,6 +10,7 @@ import {
 import { useFavorites } from '../contexts/FavoritesContext';
 import TrailerModal from '../components/TrailerModal';
 import MediaRow from '../components/MediaRow';
+import { addContinueWatching } from '../services/continueWatching';
 
 export default function MovieDetails() {
   // id vem da rota: /movie/:id ou /tv/:id
@@ -24,7 +25,7 @@ export default function MovieDetails() {
   const [media, setMedia] = useState(null);
   const [trailerKey, setTrailerKey] = useState(null);
 
-  // extras (pra ficar com cara de streaming real)
+  // extras
   const [cast, setCast] = useState([]);
   const [recommendations, setRecommendations] = useState([]);
 
@@ -39,7 +40,6 @@ export default function MovieDetails() {
   const { isFavorite, addFavorite, removeFavorite } = useFavorites();
 
   useEffect(() => {
-    // carrega tudo junto pra ficar rápido e consistente
     const fetchData = async () => {
       try {
         setLoading(true);
@@ -54,13 +54,25 @@ export default function MovieDetails() {
 
         setMedia(detailsData);
 
-        // recomendações (se vier vazio, só não aparece a seção)
+        // salva no “Continuar assistindo” (fica tipo Netflix)
+        addContinueWatching({
+          id: detailsData.id,
+          title: detailsData.title,
+          name: detailsData.name,
+          poster_path: detailsData.poster_path,
+          media_type: type,
+          vote_average: detailsData.vote_average,
+          release_date: detailsData.release_date,
+          first_air_date: detailsData.first_air_date,
+        });
+
+        // recomendações
         setRecommendations(recData?.results || []);
 
-        // elenco (eu corto pra não ficar gigante na tela)
+        // elenco (corto pra não ficar gigante)
         setCast((creditsData?.cast || []).slice(0, 18));
 
-        // a lista de vídeos pode vir vazia
+        // vídeos
         const results = videosData?.results || [];
 
         // prioridade: trailer oficial do YouTube
@@ -90,7 +102,6 @@ export default function MovieDetails() {
     fetchData();
   }, [type, id]);
 
-  // loading state
   if (loading) {
     return (
       <div className="pt-32 container mx-auto px-4 text-center">
@@ -99,7 +110,6 @@ export default function MovieDetails() {
     );
   }
 
-  // erro / item não encontrado
   if (error || !media) {
     return (
       <div className="pt-32 container mx-auto px-4 text-center">
@@ -108,11 +118,10 @@ export default function MovieDetails() {
     );
   }
 
-  // normalizando campos (movie e tv usam nomes diferentes)
   const title = media.title || media.name || 'Sem título';
   const year = (media.release_date || media.first_air_date || '').slice(0, 4) || 'N/A';
 
-  // movie tem runtime; tv eu mostro temporadas/eps (fica bem melhor do que N/A)
+  // movie tem runtime; tv eu mostro temporadas
   const metaTime =
     type === 'movie'
       ? media.runtime
@@ -123,12 +132,9 @@ export default function MovieDetails() {
         : 'N/A';
 
   const genres = media.genres?.map((g) => g.name).join(', ') || 'N/A';
-
-  // imagens: backdrop com qualidade alta e poster em w500
   const backdrop = getImageUrl(media.backdrop_path, 'original');
   const poster = getImageUrl(media.poster_path, 'w500');
 
-  // favorito (Minha Lista)
   const fav = isFavorite(media.id);
 
   const handleToggleFavorite = () => {
@@ -137,7 +143,6 @@ export default function MovieDetails() {
       return;
     }
 
-    // guardo só o essencial (pra lista não ficar gigante no localStorage)
     addFavorite({
       id: media.id,
       title: media.title,
@@ -152,7 +157,6 @@ export default function MovieDetails() {
 
   return (
     <div className="relative min-h-screen">
-      {/* backdrop bem leve por trás, só pra dar clima */}
       <div
         className="absolute inset-0 bg-cover bg-center opacity-30"
         style={{ backgroundImage: `url(${backdrop})` }}
@@ -175,7 +179,6 @@ export default function MovieDetails() {
               {year} • {metaTime} • {genres}
             </p>
 
-            {/* nota e votos */}
             <div className="flex items-center mb-6">
               <span className="text-3xl font-bold text-accent-red mr-3">
                 {media.vote_average?.toFixed(1) || '—'}
@@ -188,7 +191,6 @@ export default function MovieDetails() {
               {media.overview || 'Sinopse não disponível.'}
             </p>
 
-            {/* ações principais */}
             <div className="flex flex-wrap gap-3">
               <button
                 onClick={handleToggleFavorite}
@@ -257,12 +259,11 @@ export default function MovieDetails() {
         )}
       </div>
 
-      {/* Recomendações (carrossel reutilizando MediaRow) */}
+      {/* Recomendações */}
       <div className="container mx-auto px-4 pb-20">
         <MediaRow title="Recomendações" items={recommendations} type={type} />
       </div>
 
-      {/* Modal do trailer (fecha no ESC e clicando fora) */}
       <TrailerModal
         open={isTrailerOpen}
         onClose={() => setIsTrailerOpen(false)}

@@ -2,10 +2,13 @@ import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useFavorites } from '../contexts/FavoritesContext';
 import { getPopularMovies, getImageUrl } from '../services/tmdbApi';
+import MediaRow from '../components/MediaRow';
+import { getContinueWatching } from '../services/continueWatching';
 
 export default function Home() {
   const [movies, setMovies] = useState([]);
   const [hero, setHero] = useState(null);
+  const [continueList, setContinueList] = useState([]);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -24,10 +27,12 @@ export default function Home() {
 
         setMovies(list);
 
-        // escolhe um destaque (prefiro dos primeiros pq costuma vir com backdrop melhor)
         const pickFrom = list.slice(0, 8);
         const chosen = pickFrom[Math.floor(Math.random() * pickFrom.length)];
         setHero(chosen || null);
+
+        // puxa o “continuar assistindo” do localStorage
+        setContinueList(getContinueWatching());
       } catch (err) {
         setError('Erro ao carregar filmes. Verifique conexão ou API Key.');
         console.error(err);
@@ -59,7 +64,6 @@ export default function Home() {
             loading="lazy"
           />
 
-          {/* overlay: escurece e dá aquele clima streaming */}
           <div className="absolute inset-0 bg-gradient-to-r from-dark-bg via-dark-bg/85 to-transparent" />
           <div className="absolute inset-0 bg-gradient-to-t from-dark-bg/90 via-transparent to-transparent" />
 
@@ -92,7 +96,6 @@ export default function Home() {
                   Explorar
                 </Link>
 
-                {/* botão de lista pro destaque também */}
                 <button
                   type="button"
                   onClick={() => {
@@ -129,6 +132,11 @@ export default function Home() {
 
       {error && <p className="text-red-500 text-center text-xl">{error}</p>}
 
+      {/* CONTINUAR ASSISTINDO (aparece só se tiver algo salvo) */}
+      {!loading && !error && continueList.length > 0 && (
+        <MediaRow title="Continuar assistindo" items={continueList} type="movie" />
+      )}
+
       {/* POPULARES (carrossel) */}
       {!loading && !error && movies.length > 0 && (
         <section className="mb-16 relative group">
@@ -137,7 +145,6 @@ export default function Home() {
           </div>
 
           <div className="relative">
-            {/* Botão esquerdo */}
             <button
               type="button"
               onClick={scrollLeft}
@@ -159,7 +166,6 @@ export default function Home() {
               </svg>
             </button>
 
-            {/* Botão direito */}
             <button
               type="button"
               onClick={scrollRight}
@@ -181,11 +187,9 @@ export default function Home() {
               </svg>
             </button>
 
-            {/* Fade nas bordas */}
             <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-12 z-20 bg-gradient-to-r from-dark-bg to-transparent" />
             <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-12 z-20 bg-gradient-to-l from-dark-bg to-transparent" />
 
-            {/* Carrossel */}
             <div
               ref={carouselRef}
               className="flex overflow-x-auto gap-5 pb-6 scrollbar-hide snap-x snap-mandatory scroll-smooth"
@@ -206,7 +210,6 @@ export default function Home() {
                       loading="lazy"
                     />
 
-                    {/* Favorito */}
                     <button
                       type="button"
                       onClick={(e) => {
