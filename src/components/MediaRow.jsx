@@ -80,7 +80,7 @@ export default function MediaRow({ title, items = [], type = 'movie' }) {
         {/* Carrossel */}
         <div
           ref={carouselRef}
-          className="flex overflow-x-auto gap-5 pb-6 scrollbar-hide snap-x snap-mandatory scroll-smooth"
+          className="flex overflow-x-auto gap-5 pb-8 scrollbar-hide snap-x snap-mandatory scroll-smooth"
         >
           {items.map((item) => {
             const id = item.id;
@@ -93,66 +93,82 @@ export default function MediaRow({ title, items = [], type = 'movie' }) {
               <Link
                 key={id}
                 to={`/${type}/${id}`}
-                className="group relative flex-shrink-0 w-44 sm:w-52 md:w-60 lg:w-64 snap-start rounded-xl overflow-hidden shadow-xl bg-dark-secondary transition-transform duration-300 hover:shadow-2xl hover:scale-105"
+                className="group/item relative flex-shrink-0 w-44 sm:w-52 md:w-60 lg:w-64 snap-start"
               >
-                <img
-                  src={getImageUrl(item.poster_path)}
-                  alt={name}
-                  className="w-full h-64 md:h-80 lg:h-96 object-cover"
-                  loading="lazy"
-                />
+                {/* “cartão” do card:
+                    - no hover ele cresce mais, vem pra frente e ganha um glow leve
+                    - o overflow hidden segura o poster e o overlay */}
+                <div
+                  className="relative rounded-xl overflow-hidden shadow-xl bg-dark-secondary
+                             transform transition-all duration-300 ease-out
+                             group-hover/item:scale-[1.12] group-hover/item:-translate-y-2
+                             group-hover/item:shadow-2xl group-hover/item:z-30"
+                >
+                  <img
+                    src={getImageUrl(item.poster_path)}
+                    alt={name}
+                    className="w-full h-64 md:h-80 lg:h-96 object-cover"
+                    loading="lazy"
+                  />
 
-                {/* Overlay do hover com info + ações */}
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent" />
+                  {/* overlay: no hover aparece e dá aquela vibe Netflix */}
+                  <div className="absolute inset-0 opacity-0 group-hover/item:opacity-100 transition-opacity duration-300">
+                    {/* gradiente + “glow” leve */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent" />
+                    <div className="absolute inset-0 ring-1 ring-white/10" />
 
-                  <div className="absolute bottom-0 left-0 right-0 p-4">
-                    <p className="font-semibold text-base md:text-lg leading-tight line-clamp-2">
-                      {name}
-                    </p>
+                    {/* conteúdo em baixo */}
+                    <div className="absolute bottom-0 left-0 right-0 p-4">
+                      <p className="font-semibold text-base md:text-lg leading-tight line-clamp-2">
+                        {name}
+                      </p>
 
-                    <div className="flex items-center gap-2 text-sm text-text-secondary mt-2">
-                      <span className="text-yellow-400">★</span>
-                      <span className="text-white">{rating}</span>
-                      <span>•</span>
-                      <span>{year}</span>
-                    </div>
-
-                    <div className="flex gap-2 mt-3">
-                      {/* Aqui é só visual, o clique do card já vai pros detalhes */}
-                      <div className="bg-white text-black font-semibold px-3 py-2 rounded-lg text-sm hover:bg-gray-200 transition">
-                        Ver detalhes
+                      <div className="flex items-center gap-2 text-sm text-text-secondary mt-2">
+                        <span className="text-yellow-400">★</span>
+                        <span className="text-white">{rating}</span>
+                        <span>•</span>
+                        <span>{year}</span>
                       </div>
 
-                      {/* Botão de lista: não pode navegar quando clicar nele */}
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
+                      <div className="flex gap-2 mt-3">
+                        {/* aqui é só visual, pq clicar no card já abre os detalhes */}
+                        <div className="bg-white text-black font-semibold px-3 py-2 rounded-lg text-sm hover:bg-gray-200 transition">
+                          Ver detalhes
+                        </div>
 
-                          if (fav) {
-                            removeFavorite(id);
-                          } else {
-                            addFavorite({
-                              id,
-                              title: item.title,
-                              name: item.name,
-                              poster_path: item.poster_path,
-                              media_type: type,
-                              vote_average: item.vote_average,
-                              release_date: item.release_date,
-                              first_air_date: item.first_air_date,
-                            });
-                          }
-                        }}
-                        className="bg-dark-secondary/80 text-white px-3 py-2 rounded-lg text-sm border border-white/10 hover:bg-dark-tertiary transition"
-                      >
-                        {fav ? 'Remover' : '+ Lista'}
-                      </button>
+                        {/* botão de lista: não pode navegar quando clicar nele */}
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+
+                            if (fav) {
+                              removeFavorite(id);
+                            } else {
+                              addFavorite({
+                                id,
+                                title: item.title,
+                                name: item.name,
+                                poster_path: item.poster_path,
+                                media_type: type,
+                                vote_average: item.vote_average,
+                                release_date: item.release_date,
+                                first_air_date: item.first_air_date,
+                              });
+                            }
+                          }}
+                          className="bg-dark-secondary/80 text-white px-3 py-2 rounded-lg text-sm border border-white/10 hover:bg-dark-tertiary transition"
+                        >
+                          {fav ? 'Remover' : '+ Lista'}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
+
+                {/* esse “espacinho invisível” evita o hover crescer e colidir cortando embaixo */}
+                <div className="h-2" />
               </Link>
             );
           })}
