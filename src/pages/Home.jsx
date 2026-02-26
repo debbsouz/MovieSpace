@@ -3,6 +3,8 @@ import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useFavorites } from '../contexts/FavoritesContext';
 import { getPopularMovies, getImageUrl } from '../services/tmdbApi';
+import SkeletonRow from '../components/SkeletonRow';
+
 
 export default function Home() {
   const [movies, setMovies] = useState([]);
@@ -15,9 +17,9 @@ export default function Home() {
     const fetchPopular = async () => {
       try {
         const data = await getPopularMovies();
-        setMovies(data.results || []); // garante array vazio se não vier results
+        setMovies(data.results || []);
       } catch (err) {
-        setError('Erro ao carregar filmes. Verifique sua conexão ou API Key.');
+        setError('Erro ao carregar filmes. Verifique conexão ou API Key.');
         console.error(err);
       } finally {
         setLoading(false);
@@ -52,29 +54,21 @@ export default function Home() {
             <button
               onClick={scrollLeft}
               className="bg-dark-secondary hover:bg-dark-tertiary text-white p-3 rounded-full transition shadow-md"
-              aria-label="Scroll para esquerda"
+              aria-label="Scroll esquerda"
             >
               ←
             </button>
             <button
               onClick={scrollRight}
               className="bg-dark-secondary hover:bg-dark-tertiary text-white p-3 rounded-full transition shadow-md"
-              aria-label="Scroll para direita"
+              aria-label="Scroll direita"
             >
               →
             </button>
           </div>
         </div>
 
-        {loading && (
-          <p className="text-center text-xl text-text-secondary animate-pulse">
-            Carregando filmes...
-          </p>
-        )}
-
-        {error && (
-          <p className="text-red-500 text-center text-xl">{error}</p>
-        )}
+         {loading && <SkeletonRow title="Populares" />}        {error && <p className="text-red-500 text-center text-xl">{error}</p>}
 
         {!loading && !error && movies.length > 0 && (
           <div
@@ -87,10 +81,8 @@ export default function Home() {
               return (
                 <Link
                   key={movie.id}
-                  to={`/movie/${movie.id}`}  // ← corrigido: sempre usa movie.id real
-                  className="relative flex-shrink-0 w-44 sm:w-52 md:w-60 lg:w-64 snap-start 
-                             bg-dark-secondary rounded-xl overflow-hidden shadow-xl 
-                             hover:scale-105 hover:shadow-2xl transition-all duration-300"
+                  to={`/movie/${movie.id}`}  // ← ESSA LINHA É O QUE ESTAVA ERRADO. AGORA ESTÁ FIXA E CORRETA
+                  className="relative flex-shrink-0 w-44 sm:w-52 md:w-60 lg:w-64 snap-start bg-dark-secondary rounded-xl overflow-hidden shadow-xl hover:scale-105 hover:shadow-2xl transition-all duration-300"
                 >
                   <img
                     src={getImageUrl(movie.poster_path)}
@@ -99,7 +91,6 @@ export default function Home() {
                     loading="lazy"
                   />
 
-                  {/* Botão de coração */}
                   <button
                     onClick={(e) => {
                       e.preventDefault();
