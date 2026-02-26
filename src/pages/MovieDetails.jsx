@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import { getMediaDetails, getMediaVideos, getImageUrl } from '../services/tmdbApi';
 import { useFavorites } from '../contexts/FavoritesContext';
+import TrailerModal from '../components/TrailerModal';
 
 export default function MovieDetails() {
   const { id } = useParams();
@@ -13,6 +14,8 @@ export default function MovieDetails() {
   const [trailerKey, setTrailerKey] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const [isTrailerOpen, setIsTrailerOpen] = useState(false);
 
   const { isFavorite, addFavorite, removeFavorite } = useFavorites();
 
@@ -31,19 +34,16 @@ export default function MovieDetails() {
 
         const results = videosData?.results || [];
 
-        // Trailer oficial do YouTube
         let trailer = results.find(
           (vid) => vid.site === 'YouTube' && vid.type === 'Trailer' && vid.official
         );
 
-        // Qualquer Trailer do YouTube
         if (!trailer) {
           trailer = results.find(
             (vid) => vid.site === 'YouTube' && vid.type === 'Trailer'
           );
         }
 
-        // Primeiro vídeo do YouTube
         if (!trailer) {
           trailer = results.find((vid) => vid.site === 'YouTube');
         }
@@ -113,27 +113,6 @@ export default function MovieDetails() {
       <div className="absolute inset-0 bg-gradient-to-t from-dark-bg via-dark-bg/90 to-transparent" />
 
       <div className="relative pt-32 pb-20 container mx-auto px-4 z-10">
-        {trailerKey ? (
-          <div className="mb-12">
-            <h2 className="text-3xl font-bold mb-4 text-center md:text-left">
-              Trailer Oficial
-            </h2>
-            <div className="aspect-video w-full max-w-5xl mx-auto rounded-xl overflow-hidden shadow-2xl">
-              <iframe
-                src={`https://www.youtube.com/embed/${trailerKey}?autoplay=1&mute=1&controls=1&rel=0`}
-                title={`${title} - Trailer`}
-                className="w-full h-full"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            </div>
-          </div>
-        ) : (
-          <p className="text-center text-xl mb-12 text-text-secondary">
-            Trailer não disponível para este título
-          </p>
-        )}
-
         <div className="flex flex-col md:flex-row gap-10">
           <img
             src={poster}
@@ -144,6 +123,7 @@ export default function MovieDetails() {
 
           <div className="flex-1">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">{title}</h1>
+
             <p className="text-lg text-text-secondary mb-6">
               {year} • {runtime} • {genres}
             </p>
@@ -160,16 +140,44 @@ export default function MovieDetails() {
               {media.overview || 'Sinopse não disponível.'}
             </p>
 
-            <button
-              onClick={handleToggleFavorite}
-              type="button"
-              className="bg-accent-red hover:bg-accent-red-hover text-white font-semibold py-3 px-8 rounded-lg transition duration-300 transform hover:scale-105"
-            >
-              {fav ? 'Remover da Minha Lista' : '+ Adicionar à Minha Lista'}
-            </button>
+            <div className="flex flex-wrap gap-3">
+              <button
+                onClick={handleToggleFavorite}
+                type="button"
+                className="bg-accent-red hover:bg-accent-red-hover text-white font-semibold py-3 px-6 rounded-lg transition duration-300 transform hover:scale-105"
+              >
+                {fav ? 'Remover da Minha Lista' : '+ Adicionar à Minha Lista'}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => trailerKey && setIsTrailerOpen(true)}
+                disabled={!trailerKey}
+                className={`font-semibold py-3 px-6 rounded-lg transition duration-300 border ${
+                  trailerKey
+                    ? 'bg-white text-black hover:bg-gray-200'
+                    : 'bg-white/10 text-white/40 border-white/10 cursor-not-allowed'
+                }`}
+              >
+                Assistir trailer
+              </button>
+            </div>
+
+            {!trailerKey && (
+              <p className="text-text-secondary mt-4">
+                Trailer não disponível para este título.
+              </p>
+            )}
           </div>
         </div>
       </div>
+
+      <TrailerModal
+        open={isTrailerOpen}
+        onClose={() => setIsTrailerOpen(false)}
+        title={title}
+        youtubeKey={trailerKey}
+      />
     </div>
   );
 }
