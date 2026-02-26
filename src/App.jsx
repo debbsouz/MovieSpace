@@ -7,6 +7,7 @@ import Search from './pages/Search';
 import Browse from './pages/Browse';
 import TopRated from './pages/TopRated';
 import Trending from './pages/Trending';
+import Login from './pages/Login';
 
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
             <Route path="/browse" element={<Browse />} />
             <Route path="/top-rated" element={<TopRated />} />
             <Route path="/trending" element={<Trending />} />
+            <Route path="/login" element={<Login />} />
           </Routes>
         </main>
       </div>

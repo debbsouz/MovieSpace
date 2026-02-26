@@ -100,6 +100,10 @@ export default function Header() {
           <Link to="/minha-lista" className="text-text-secondary hover:text-white transition">
             Minha Lista
           </Link>
+
+          <Link to="/login" className="text-text-secondary hover:text-white transition">
+  Login
+</Link>
         </nav>
 
         {/* Busca com dropdown */}
