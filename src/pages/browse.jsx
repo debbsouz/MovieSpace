@@ -17,20 +17,15 @@ import {
 export default function Browse() {
   const [params, setParams] = useSearchParams();
 
-  // type = movie ou tv
   const type = params.get('type') === 'tv' ? 'tv' : 'movie';
-
-  // genre = id do gênero escolhido (string ou null)
   const genre = params.get('genre') || '';
 
-  // dados padrão
   const [popular, setPopular] = useState([]);
   const [topRated, setTopRated] = useState([]);
   const [nowPlaying, setNowPlaying] = useState([]);
   const [upcoming, setUpcoming] = useState([]);
   const [onTheAir, setOnTheAir] = useState([]);
 
-  // gêneros
   const [genres, setGenres] = useState([]);
 
   const [loading, setLoading] = useState(true);
@@ -48,12 +43,11 @@ export default function Browse() {
         setLoading(true);
         setError(null);
 
-        // 1) carrega gêneros do type atual
+        // carrega a lista de gêneros do type atual (movie ou tv)
         const genreRes = await getGenres(type);
         setGenres(genreRes?.genres || []);
 
-        // 2) se tiver gênero selecionado, eu priorizo "discover"
-        //    e uso isso pra popular/topRated/nowPlaying/etc virar "curado por gênero"
+        // se tiver gênero selecionado, uso discover pra montar as linhas “curadas”
         if (genre) {
           const [p, t] = await Promise.all([
             discoverByGenre(type, genre, 1, 'popularity.desc'),
@@ -63,17 +57,14 @@ export default function Browse() {
           setPopular(p.results || []);
           setTopRated(t.results || []);
 
-          // se quiser mais linhas por gênero, dá pra adicionar:
-          // - "release_date.desc" pra lançamentos
-          // - "revenue.desc" só pra movies (não fica tão bom sempre)
           if (type === 'movie') {
-            const [recent, upcomingLike] = await Promise.all([
+            const [recent, moreLikeThis] = await Promise.all([
               discoverByGenre('movie', genre, 1, 'primary_release_date.desc'),
               discoverByGenre('movie', genre, 1, 'popularity.desc'),
             ]);
 
             setNowPlaying(recent.results || []);
-            setUpcoming(upcomingLike.results || []);
+            setUpcoming(moreLikeThis.results || []);
             setOnTheAir([]);
           } else {
             const [recentTv] = await Promise.all([
@@ -85,11 +76,10 @@ export default function Browse() {
             setUpcoming([]);
           }
 
-          setLoading(false);
           return;
         }
 
-        // 3) sem gênero: comportamento normal do Browse
+        // sem gênero: comportamento normal
         if (type === 'movie') {
           const [p, t, n, u] = await Promise.all([
             getPopular('movie'),
@@ -128,7 +118,7 @@ export default function Browse() {
   }, [type, genre]);
 
   const setTypeOnly = (nextType) => {
-    // mantém gênero se quiser, mas normalmente eu limpo pra não confundir
+    // quando troca movie <-> tv, eu limpo o gênero pra não virar bagunça
     setParams({ type: nextType });
   };
 
@@ -142,55 +132,56 @@ export default function Browse() {
 
   return (
     <div className="pt-28 pb-16 container mx-auto px-4">
-      <div className="flex flex-col gap-6 mb-10">
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
-          <div>
-            <h1 className="text-3xl md:text-4xl font-bold">
-              Explorar {type === 'movie' ? 'Filmes' : 'Séries'}
-            </h1>
+      <div className="flex items-center justify-between gap-4 mb-10">
+        <div>
+          <h1 className="text-3xl md:text-4xl font-bold">
+            Explorar {type === 'movie' ? 'Filmes' : 'Séries'}
+          </h1>
 
-            <p className="text-text-secondary mt-2">
-              {genre
-                ? `Filtrando por gênero: ${selectedGenreName || '...'}`
-                : 'Categorias com carrosséis estilo streaming.'}
-            </p>
-          </div>
-
-          <div className="flex bg-dark-secondary rounded-full p-1 border border-dark-tertiary w-fit">
-            <button
-              type="button"
-              onClick={() => setTypeOnly('movie')}
-              className={`px-4 py-2 rounded-full transition ${
-                type === 'movie' ? 'bg-accent-red text-white' : 'text-text-secondary hover:text-white'
-              }`}
-            >
-              Filmes
-            </button>
-            <button
-              type="button"
-              onClick={() => setTypeOnly('tv')}
-              className={`px-4 py-2 rounded-full transition ${
-                type === 'tv' ? 'bg-accent-red text-white' : 'text-text-secondary hover:text-white'
-              }`}
-            >
-              Séries
-            </button>
-          </div>
-        </div>
-
-        {/* Chips de gêneros */}
-        <div className="bg-dark-secondary/40 border border-dark-tertiary rounded-2xl p-4 md:p-5">
-          <p className="text-text-secondary mb-3">
-            Escolha um gênero pra “curar” as listas
+          <p className="text-text-secondary mt-2">
+            {genre
+              ? `Filtrando por: ${selectedGenreName || 'gênero'}`
+              : 'Categorias com carrosséis estilo streaming.'}
           </p>
-
-          <GenreChips
-            genres={genres}
-            selectedId={genre || null}
-            onSelect={setGenre}
-            onClear={clearGenre}
-          />
         </div>
+
+        <div className="flex bg-dark-secondary rounded-full p-1 border border-dark-tertiary">
+          <button
+            type="button"
+            onClick={() => setTypeOnly('movie')}
+            className={`px-4 py-2 rounded-full transition ${
+              type === 'movie'
+                ? 'bg-accent-red text-white'
+                : 'text-text-secondary hover:text-white'
+            }`}
+          >
+            Filmes
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setTypeOnly('tv')}
+            className={`px-4 py-2 rounded-full transition ${
+              type === 'tv'
+                ? 'bg-accent-red text-white'
+                : 'text-text-secondary hover:text-white'
+            }`}
+          >
+            Séries
+          </button>
+        </div>
+      </div>
+
+      {/* chips de gênero */}
+      <div className="bg-dark-secondary/40 border border-dark-tertiary rounded-2xl p-4 md:p-5 mb-10">
+        <p className="text-text-secondary mb-3">Explorar por gênero</p>
+
+        <GenreChips
+          genres={genres}
+          selectedId={genre}
+          onSelect={setGenre}
+          onClear={clearGenre}
+        />
       </div>
 
       {loading && (
@@ -205,13 +196,13 @@ export default function Browse() {
       {!loading && !error && (
         <>
           <MediaRow
-            title={genre ? `Em alta em ${selectedGenreName || 'gênero'}` : 'Populares'}
+            title={genre ? `Em alta • ${selectedGenreName || 'gênero'}` : 'Populares'}
             items={popular}
             type={type}
           />
 
           <MediaRow
-            title={genre ? `Melhores notas em ${selectedGenreName || 'gênero'}` : 'Melhores avaliados'}
+            title={genre ? `Mais bem avaliados • ${selectedGenreName || 'gênero'}` : 'Melhores avaliados'}
             items={topRated}
             type={type}
           />
@@ -219,20 +210,20 @@ export default function Browse() {
           {type === 'movie' ? (
             <>
               <MediaRow
-                title={genre ? `Lançamentos em ${selectedGenreName || 'gênero'}` : 'Em cartaz'}
+                title={genre ? `Lançamentos • ${selectedGenreName || 'gênero'}` : 'Em cartaz'}
                 items={nowPlaying}
                 type="movie"
               />
 
               <MediaRow
-                title={genre ? `Mais para você (${selectedGenreName || 'gênero'})` : 'Em breve'}
+                title={genre ? `Mais para você • ${selectedGenreName || 'gênero'}` : 'Em breve'}
                 items={upcoming}
                 type="movie"
               />
             </>
           ) : (
             <MediaRow
-              title={genre ? `Recém lançadas (${selectedGenreName || 'gênero'})` : 'No ar'}
+              title={genre ? `Novidades • ${selectedGenreName || 'gênero'}` : 'No ar'}
               items={onTheAir}
               type="tv"
             />

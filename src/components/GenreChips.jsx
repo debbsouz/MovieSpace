@@ -1,9 +1,4 @@
-export default function GenreChips({
-  genres = [],
-  selectedId = null,
-  onSelect,
-  onClear,
-}) {
+export default function GenreChips({ genres = [], selectedId = '', onSelect, onClear }) {
   return (
     <div className="flex flex-wrap gap-2 md:gap-3">
       <button
