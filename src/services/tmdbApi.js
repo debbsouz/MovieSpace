@@ -1,4 +1,3 @@
-// src/services/tmdbApi.js
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 const BASE_URL = 'https://api.themoviedb.org/3';
 const LANGUAGE = 'pt-BR';
@@ -33,8 +32,8 @@ const fetchFromTMDB = async (endpoint, params = {}) => {
 
 export const getPopularMovies = () => fetchFromTMDB('/movie/popular');
 
-export const searchMedia = (query) =>
-  fetchFromTMDB('/search/multi', { query });
+export const searchMedia = (query, page = 1) =>
+  fetchFromTMDB(`/search/multi`, { query, page });
 
 export const getMediaDetails = (type, id) =>
   fetchFromTMDB(`/${type}/${id}`);
