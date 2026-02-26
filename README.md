@@ -27,19 +27,19 @@ React • React Router DOM • Context API • TailwindCSS • TMDB API • Vite
 ## Screenshots
 
 <div align="center">
-  <img src="./screenshots/home.png" width="420"/>
-  <img src="./screenshots/browse.png" width="420"/>
+  <img src="./screenshots/home.png" width="340"/>
+  <img src="./screenshots/browse.png" width="340"/>
 </div>
 
 <div align="center">
-  <img src="./screenshots/search.png" width="420"/>
-  <img src="./screenshots/trending.png" width="420"/>
+  <img src="./screenshots/search.png" width="340"/>
+  <img src="./screenshots/trending.png" width="340"/>
 </div>
 
 </br>
 
 <div align="center">
- <img src="./screenshots/demo.gif.gif" width="900"/>
+ <img src="./screenshots/demo.gif.gif" width="720"/>
  </div>
 
 ---
