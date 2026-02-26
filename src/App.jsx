@@ -5,6 +5,8 @@ import MovieDetails from './pages/MovieDetails';
 import MyList from './pages/MyList';
 import Search from './pages/Search';
 import Browse from './pages/Browse';
+import TopRated from './pages/TopRated';
+
 
 function App() {
   return (
@@ -19,6 +21,7 @@ function App() {
             <Route path="/tv/:id" element={<MovieDetails />} />
             <Route path="/minha-lista" element={<MyList />} />
             <Route path="/browse" element={<Browse />} />
+            <Route path="/top-rated" element={<TopRated />} />
           </Routes>
         </main>
       </div>
