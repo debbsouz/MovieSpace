@@ -67,11 +67,11 @@ export default function Home() {
     <div className="pt-24 pb-16 container mx-auto px-4">
       {/* HERO (Netflix vibe) */}
       {!loading && !error && hero && (
-        <section className="relative h-[68vh] md:h-[72vh] mb-14 rounded-2xl overflow-hidden border border-white/5">
+        <section className="relative h-[68vh] md:h-[72vh] mb-14 rounded-2xl overflow-hidden border border-white/5 hero-enter hero-breathe">
           <img
             src={getImageUrl(hero.backdrop_path, 'original')}
             alt={hero.title || 'Destaque'}
-            className="absolute inset-0 w-full h-full object-cover"
+            className="hero-backdrop absolute inset-0 w-full h-full object-cover"
             loading="lazy"
           />
 

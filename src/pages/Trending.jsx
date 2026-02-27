@@ -132,14 +132,18 @@ export default function Trending() {
                 <Link
                   key={`${mediaType}-${item.id}`}
                   to={`/${mediaType}/${item.id}`}
-                  className="relative bg-dark-secondary rounded-xl overflow-hidden shadow-xl hover:scale-[1.02] hover:shadow-2xl transition"
+                  className="group relative bg-dark-secondary rounded-xl overflow-hidden shadow-xl hover:scale-[1.03] hover:shadow-2xl transition-all duration-200"
                 >
                   <img
                     src={getImageUrl(item.poster_path)}
                     alt={title}
-                    className="w-full h-64 md:h-80 object-cover"
+                    className="w-full h-64 md:h-80 object-cover transition duration-200 group-hover:saturate-110 group-hover:contrast-110"
                     loading="lazy"
                   />
+                  <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+                    <div className="absolute inset-0 ring-1 ring-white/10" />
+                  </div>
 
                   <div className="p-3">
                     <p className="font-semibold truncate">{title}</p>

@@ -98,7 +98,7 @@ export default function MediaRow({ title, items = [], type = 'movie' }) {
                   <img
                     src={getImageUrl(item.poster_path)}
                     alt={name}
-                    className="w-full h-64 md:h-80 lg:h-96 object-cover"
+                    className="w-full h-64 md:h-80 lg:h-96 object-cover transition duration-200 group-hover/item:saturate-110 group-hover/item:contrast-110"
                     loading="lazy"
                   />
 

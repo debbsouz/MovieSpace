@@ -1,34 +1,51 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@config "../tailwind.config.js";
 
 html, body {
   margin: 0;
   padding: 0;
-  background-color: #141414;
-  color: #E5E5E5;
-  font-family: 'Inter', sans-serif;
 }
 
 * {
   box-sizing: border-box;
 }
 
-/* Scrollbar dark */
-::-webkit-scrollbar {
-  width: 8px;
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
-::-webkit-scrollbar-track {
-  background: #141414;
-}
-::-webkit-scrollbar-thumb {
-  background: #333;
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
-
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+.hero-enter {
+  opacity: 0;
+  transform: translateY(12px);
+  animation: heroFadeIn 600ms ease-out forwards;
+}
+@keyframes heroFadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.hero-breathe .hero-backdrop {
+  transform-origin: center;
+  animation: heroFloat 18s ease-in-out infinite;
+}
+@keyframes heroFloat {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-enter {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+  }
+  .hero-breathe .hero-backdrop {
+    animation: none !important;
+    transform: none;
+  }
 }
